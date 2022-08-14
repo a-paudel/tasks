@@ -32,7 +32,7 @@ class Token(models.Model):
         "models.User", related_name="tokens"
     )
     token: str = fields.CharField(max_length=255, default=generate_token)
-    expires_at: fields.DatetimeField(default=generate_expiry_date)
+    expires_at:datetime = fields.DatetimeField(default=generate_expiry_date)
 
     @property
     def is_expired(self):

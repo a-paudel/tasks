@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.routing import APIRouter
-from starlette.middleware.authentication import AuthenticationMiddleware
+
+# from starlette.middleware.authentication import AuthenticationMiddleware
 from tortoise.contrib.fastapi import register_tortoise
-from app.middlewares.authentication import TokenAuthentication
+
+# from app.middlewares.authentication import TokenAuthentication
 from app.routes.users import router as users_router
 from app.routes.tasks import router as tasks_router
 from app.config import TORTOISE_ORM_CONFIG
@@ -14,8 +16,8 @@ app = FastAPI(
     title="Tasks API",
 )
 
-# middleware
-app.add_middleware(AuthenticationMiddleware, backend=TokenAuthentication())
+# # middleware
+# app.add_middleware(AuthenticationMiddleware, backend=TokenAuthentication())
 
 
 # routes
