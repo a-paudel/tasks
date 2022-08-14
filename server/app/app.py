@@ -30,4 +30,5 @@ app.include_router(api)
 register_tortoise(
     app,
     config=TORTOISE_ORM_CONFIG,
+    generate_schemas=True,
 )
