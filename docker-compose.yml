@@ -7,6 +7,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ./data:/var/lib/postgresql/data
+    networks:
+      - internal
   web:
     restart: always
     depends_on:
@@ -16,6 +18,8 @@ services:
       - .env
     expose:
       - ${PORT}
+    ports:
+      - ${PORT}:${PORT}
     command:
       [
         "uvicorn",
@@ -27,7 +31,7 @@ services:
       ]
     networks:
       - backend
-
+      - internal
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tasks.rule=Host(`tasks.paudel.me`)"
@@ -37,3 +41,5 @@ services:
 networks:
   backend:
     external: true
+  internal:
+    driver: bridge
