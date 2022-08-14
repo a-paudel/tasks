@@ -8,6 +8,7 @@ TORTOISE_ORM_CONFIG = {
         "models": {
             "models": [
                 "app.models.users",
+                "app.models.tasks",
                 "aerich.models",
             ],
         }

@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from starlette.authentication import BaseUser
 import arrow
 from secrets import token_urlsafe
+from app.models.tasks import Task
 
 
 # users model
@@ -47,6 +48,10 @@ class UserOutput(BaseModel):
 class TokenOutput(BaseModel):
     token: str
     expires_at: datetime
+
+
+class LogoutInput(BaseModel):
+    token: str
 
 
 class LoginInput(BaseModel):

@@ -5,6 +5,7 @@ from app.models.users import (
     TokenOutput,
     LoginInput,
     RegisterInput,
+    LogoutInput,
 )
 from fastapi.routing import APIRouter
 from fastapi.responses import JSONResponse
@@ -45,8 +46,22 @@ async def register(data: RegisterInput):
         return token
 
 
-# chech route
+# check route
 @router.get("/check", response_model=UserOutput, responses={403: {}})
 @requires("authenticated")
-def check(request: Request):
+async def check(request: Request):
     return request.user
+
+
+# logout route
+@router.post("/logout", status_code=204, responses={403: {}, 404: {}})
+@requires("authenticated")
+async def logout(request: Request, data: LogoutInput):
+    # get token
+    token = await Token.filter(token=data.token).first()
+    if token and await token.user == request.user:
+        # delete token
+        await Token.filter(id=token.id).delete()
+        return
+    else:
+        return JSONResponse(status_code=404, content={"detail": "Token not found"})
