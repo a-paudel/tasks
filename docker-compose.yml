@@ -14,8 +14,8 @@ services:
     build: .
     env_file:
       - .env
-    ports:
-      - ${PORT}:${PORT}
+    expose:
+      - ${PORT}
     command:
       [
         "uvicorn",
@@ -25,3 +25,15 @@ services:
         "--host",
         "0.0.0.0"
       ]
+    networks:
+      - backend
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tasks.rule=Host(`tasks.paudel.me`)"
+      - "traefik.http.routers.tasks.entrypoints=websecure"
+      - "traefik.http.routers.tasks.tls.certresolver=certbot"
+
+networks:
+  backend:
+    external: true
