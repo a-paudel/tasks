@@ -13,7 +13,8 @@
  */
 
 
-export const BASE_PATH = "http://localhost".replace(/\/+$/, "");
+export const BASE_PATH = "http://localhost:8000";
+// export const BASE_PATH = "http://localhost".replace(/\/+$/, "");
 
 export interface ConfigurationParameters {
     basePath?: string; // override base path
@@ -24,9 +25,7 @@ export interface ConfigurationParameters {
     password?: string; // parameter for basic security
     apiKey?: string | ((name: string) => string); // parameter for apiKey security
     accessToken?: string | Promise<string> | ((name?: string, scopes?: string[]) => string | Promise<string>); // parameter for oauth2 security
-    headers?: {
-        // authorisation from localstorage
-    }; //header params we want to use on every request
+    headers?: HTTPHeaders; //header params we want to use on every request
     credentials?: RequestCredentials; //value for the credentials param we want to use on each request
 }
 
@@ -77,8 +76,18 @@ export class Configuration {
         return undefined;
     }
 
-    get headers(): HTTPHeaders | undefined {
-        return this.configuration.headers;
+    get headers(): HTTPHeaders {
+        let customHeaders = this.configuration.headers ?? {};
+        // add token if exists
+        const token = JSON.parse(localStorage.getItem("token") ?? "null");
+        if (token) {
+            customHeaders = {
+                ...customHeaders,
+                Authorization: `Bearer ${token.token}`
+            };
+        }
+
+        return customHeaders;
     }
 
     get credentials(): RequestCredentials | undefined {
@@ -300,20 +309,20 @@ function querystringSingleKey(key: string, value: string | number | null | undef
     const fullKey = keyPrefix + (keyPrefix.length ? `[${key}]` : key);
     if (value instanceof Array) {
         const multiValue = value.map(singleValue => encodeURIComponent(String(singleValue)))
-            .join(`& ${encodeURIComponent(fullKey)}=`);
-        return `${encodeURIComponent(fullKey)}=${multiValue} `;
+            .join(`&${encodeURIComponent(fullKey)}=`);
+        return `${encodeURIComponent(fullKey)}=${multiValue}`;
     }
     if (value instanceof Set) {
         const valueAsArray = Array.from(value);
         return querystringSingleKey(key, valueAsArray, keyPrefix);
     }
     if (value instanceof Date) {
-        return `${encodeURIComponent(fullKey)}=${encodeURIComponent(value.toISOString())} `;
+        return `${encodeURIComponent(fullKey)}=${encodeURIComponent(value.toISOString())}`;
     }
     if (value instanceof Object) {
         return querystring(value as HTTPQuery, fullKey);
     }
-    return `${encodeURIComponent(fullKey)}=${encodeURIComponent(String(value))} `;
+    return `${encodeURIComponent(fullKey)}=${encodeURIComponent(String(value))}`;
 }
 
 export function mapValues(data: any, fn: (item: any) => any) {

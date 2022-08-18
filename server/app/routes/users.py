@@ -34,7 +34,7 @@ async def login(data: OAuth2PasswordRequestForm = Depends()):
 
 # register route
 @router.post("/register", response_model=TokenOutput, responses={400: {}})
-async def register(data: RegisterInput):
+async def register(data: OAuth2PasswordRequestForm = Depends()):
     # get user
     user = await User.filter(username=data.username).first()
     if user:

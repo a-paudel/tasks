@@ -9,6 +9,9 @@ from app.routes.users import router as users_router
 from app.routes.tasks import router as tasks_router
 from app.config import TORTOISE_ORM_CONFIG
 
+# cors
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(
     openapi_url="/api/openapi.json",
     docs_url="/api/docs",
@@ -25,8 +28,17 @@ api = APIRouter(prefix="/api")
 api.include_router(users_router)
 api.include_router(tasks_router)
 
-
 app.include_router(api)
+
+
+# middleware
+# cors
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # database
 register_tortoise(

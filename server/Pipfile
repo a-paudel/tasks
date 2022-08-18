@@ -7,12 +7,13 @@ name = "pypi"
 dev = "uvicorn app.app:app --reload"
 
 [packages]
-fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 passlib = {extras = ["argon2"], version = "*"}
 aerich = "*"
 tortoise-orm = {extras = ["asyncpg"], version = "*"}
 arrow = "*"
+fastapi = "*"
+python-multipart = "*"
 
 [dev-packages]
 black = "*"
