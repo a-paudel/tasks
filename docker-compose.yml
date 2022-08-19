@@ -1,24 +1,5 @@
 version: '3.0'
 services:
-  web:
-    restart: always
-    build: .
-    env_file:
-      - .env
-    # ports:
-    #   - $PORT:$PORT
-    expose:
-      - ${PORT}
-    depends_on:
-      - db
-    networks:
-      - backend
-      - internal
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.tasks.rule=Host(`tasks.paudel.me`)"
-      - "traefik.http.routers.tasks.entrypoints=websecure"
-      - "traefik.http.routers.tasks.tls.certresolver=certbot"
   db:
     restart: always
     image: postgres:alpine
@@ -28,6 +9,24 @@ services:
       - internal
     volumes:
       - ./data:/var/lib/postgresql/data
+
+  web:
+    restart: always
+    depends_on:
+      - db
+    build: .
+    env_file:
+      - .env
+    expose:
+      - ${PORT}
+    networks:
+      - backend
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tasks.rule=Host(`tasks.paudel.me`)"
+      - "traefik.http.routers.tasks.entrypoints=websecure"
+      - "traefik.http.routers.tasks.tls.certresolver=certbot"
 
 networks:
   backend:
