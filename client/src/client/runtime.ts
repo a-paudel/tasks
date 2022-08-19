@@ -13,7 +13,7 @@
  */
 
 
-export const BASE_PATH = "https://tasks.paudel.me";
+export const BASE_PATH = "";
 // export const BASE_PATH = "http://localhost".replace(/\/+$/, "");
 
 export interface ConfigurationParameters {

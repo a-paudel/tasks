@@ -19,6 +19,8 @@ services:
       - .env
     expose:
       - ${PORT}
+    ports:
+      - $PORT:$PORT
     networks:
       - backend
       - internal
