@@ -1,6 +1,6 @@
 # Tasks
 
- Simple Tasks app, live on [tasks.paudel.me](tasks.paudel.me)
+ Simple Tasks app, live on [tasks.paudel.me](https://tasks.paudel.me)
 
 ## Backend
 
