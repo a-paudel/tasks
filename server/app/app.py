@@ -1,3 +1,4 @@
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.routing import APIRouter
 
@@ -8,6 +9,9 @@ from tortoise.contrib.fastapi import register_tortoise
 from app.routes.users import router as users_router
 from app.routes.tasks import router as tasks_router
 from app.config import TORTOISE_ORM_CONFIG
+
+# static files
+from fastapi.staticfiles import StaticFiles
 
 # cors
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,13 +36,17 @@ app.include_router(api)
 
 
 # middleware
-# cors
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# cors for dev
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
+# client static files
+client_build_path = Path(__file__).parent.parent.parent.joinpath("client", "build")
+app.mount("/", StaticFiles(directory=client_build_path, html=True), name="client")
 
 # database
 register_tortoise(

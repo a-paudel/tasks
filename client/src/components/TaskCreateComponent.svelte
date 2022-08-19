@@ -14,7 +14,7 @@
 					}
 				});
 				taskListStore.update((taskList) => {
-					return [...taskList, newTask];
+					return [newTask].concat(taskList);
 				});
 				taskContent = '';
 			} catch {

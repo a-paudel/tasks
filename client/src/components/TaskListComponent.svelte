@@ -3,8 +3,10 @@
 	import type { TaskOutput } from '../client';
 	import { taskListStore } from '../stores';
 	import { api } from '../utils/client';
-	import { slide } from 'svelte/transition';
+	import { slide, crossfade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
+
+	const [send, receive] = crossfade({ duration: 500 });
 
 	onMount(async () => {
 		let res = await api.task.listTasksApiTasksGet();
@@ -16,7 +18,7 @@
 	// sort by done
 	$: $taskListStore.sort((a, b) => {
 		if (a.done === b.done) {
-			return a.id - b.id;
+			return b.id - a.id;
 		}
 		return a.done ? 1 : -1;
 	});
@@ -52,7 +54,12 @@
 </script>
 
 {#each $taskListStore as task (task.id)}
-	<div class="card bg-base-200 flex flex-row items-center px-5" in:slide animate:flip>
+	<div
+		class="card bg-base-200 flex flex-row items-center px-5"
+		in:receive={{ key: task.id }}
+		out:send={{ key: task.id }}
+		animate:flip={{ duration: 500 }}
+	>
 		<!-- checkbox -->
 		<input
 			type="checkbox"
@@ -62,7 +69,7 @@
 		/>
 
 		<div class="card-body">
-			<div class="card-title">
+			<div class="card-title" class:line-through={task.done}>
 				<h2>{task.task}</h2>
 			</div>
 		</div>

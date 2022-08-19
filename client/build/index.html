@@ -5,26 +5,34 @@
 		<link rel="icon" href="./favicon.png" />
 		<meta name="viewport" content="width=device-width" />
 		<meta http-equiv="content-security-policy" content="">
-	<link rel="modulepreload" href="/_app/immutable/start-00c950e4.js">
-	<link rel="modulepreload" href="/_app/immutable/chunks/index-1b220493.js">
-	<link rel="modulepreload" href="/_app/immutable/layout.svelte-a80b8c2b.js">
-	<link rel="modulepreload" href="/_app/immutable/pages/index.svelte-4a89c802.js">
+	<link href="/_app/immutable/assets/__layout-5c44da79.css" rel="stylesheet">
+	<link rel="modulepreload" href="/_app/immutable/start-9a8fa21e.js">
+	<link rel="modulepreload" href="/_app/immutable/chunks/index-503ae1fb.js">
+	<link rel="modulepreload" href="/_app/immutable/chunks/index-872bb42c.js">
+	<link rel="modulepreload" href="/_app/immutable/pages/__layout.svelte-a70e05f0.js">
+	<link rel="modulepreload" href="/_app/immutable/chunks/client-f8081f06.js">
+	<link rel="modulepreload" href="/_app/immutable/chunks/stores-7ad03b58.js">
+	<link rel="modulepreload" href="/_app/immutable/pages/index.svelte-371fcf55.js">
+	<link rel="modulepreload" href="/_app/immutable/chunks/index-18fde6d0.js">
 	</head>
 	<body>
 		<div>
 
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<div class="flex flex-row justify-between px-2 py-2 fixed top-0 w-full"><span class="underline font-bold"></span>
+	<button class="btn">Logout</button></div>
+<div class="container mx-auto p-10 h-screen"><div class="flex flex-col gap-5"><h1 class="text-4xl font-extralight text-center">Tasks</h1>
+	<form><input type="text" class="input input-bordered w-full" placeholder="New Task..." value=""></form>
+	</div></div>
 
 
-		<script type="module" data-sveltekit-hydrate="1oibf46">
-		import { set_public_env, start } from "/_app/immutable/start-00c950e4.js";
+		<script type="module" data-sveltekit-hydrate="1g92bc8">
+		import { set_public_env, start } from "/_app/immutable/start-9a8fa21e.js";
 
 		set_public_env({});
 
 		start({
-			target: document.querySelector('[data-sveltekit-hydrate="1oibf46"]').parentNode,
+			target: document.querySelector('[data-sveltekit-hydrate="1g92bc8"]').parentNode,
 			paths: {"base":"","assets":""},
 			session: {},
 			route: true,
