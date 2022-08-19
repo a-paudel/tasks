@@ -1,7 +1,23 @@
 # Tasks
 
- Simple Tasks app [WIP]
+ Simple Tasks app, live on [tasks.paudel.me](tasks.paudel.me)
 
-Backend using fastapi
+## Backend
 
-Frontend using sveltekit
+The backend was made using fastapi.
+
+Features:
+
+- User Authentication using tokens
+
+- CRUD functionality for own tasks
+
+## Frontend
+
+The frontend was made using sveltekit (static-adapter). Its currently hosted by the same fastapi server for simplicity.
+
+Features:
+
+- Auto navigate to login page if not logged in.
+
+- Crud functionality for tasks
