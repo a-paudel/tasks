@@ -14,7 +14,7 @@
 				let user = await api.user.checkApiUsersCheckGet();
 				userStore.set(user.username);
 			} catch {
-				window.location.href = '/login';
+				window.location.href = '/login/';
 			}
 		}
 	});
