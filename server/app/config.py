@@ -2,7 +2,7 @@ import os
 
 TORTOISE_ORM_CONFIG = {
     "connections": {
-        "default": os.getenv("DATABASE_URL"),
+        "default": os.getenv("DATABASE_URL", "sqlite://db.sqlite3"),
     },
     "apps": {
         "models": {
