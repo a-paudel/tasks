@@ -19,7 +19,8 @@
 			});
 
 			localStorage.setItem('token', JSON.stringify(res));
-			window.history.back();
+			// window.history.back();
+			window.location.href = '/';
 		} catch {
 			error += 'Invalid username or password\n';
 		}

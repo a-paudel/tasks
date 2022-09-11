@@ -23,7 +23,8 @@
 			password
 		});
 		localStorage.setItem('token', JSON.stringify(res));
-		window.history.back();
+		// window.history.back();
+		window.location.href = '/';
 	}
 </script>
 

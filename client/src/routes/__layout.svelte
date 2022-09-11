@@ -16,6 +16,14 @@
 			} catch {
 				window.location.href = '/login/';
 			}
+		} else {
+			// if on login page, check if logged in
+			try {
+				let user = await api.user.checkApiUsersCheckGet();
+				window.location.href = '/';
+			} catch {
+				// do nothing
+			}
 		}
 	});
 
