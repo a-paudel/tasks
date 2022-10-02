@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import arrow
 from fastapi import APIRouter, Depends, HTTPException
@@ -54,21 +54,22 @@ tasks_router = APIRouter(prefix="/tasks", tags=["Task"])
     tags=["Sync"],
 )
 async def pull_tasks(
-    last_fetched: float = 0, user_id: str = Depends(get_current_user_id)
+    last_pulled: float = 0, user_id: str = Depends(get_current_user_id)
 ):
+    last_pulled_dt = arrow.get(last_pulled).datetime.replace(tzinfo=timezone.utc)
     created_tasks = await Task.filter(
-        user_id=user_id, created_at__gt=last_fetched, deleted=False
+        user_id=user_id, created_at__gt=last_pulled_dt, deleted=False
     ).all()
     updated_tasks = await Task.filter(
         user_id=user_id,
-        updated_at__gt=last_fetched,
-        created_at__lte=last_fetched,
+        updated_at__gt=last_pulled_dt,
+        created_at__lte=last_pulled_dt,
         deleted=False,
     ).all()
     deleted_tasks = await Task.filter(
         user_id=user_id,
-        updated_at__gt=last_fetched,
-        created_at__lte=last_fetched,
+        updated_at__gt=last_pulled_dt,
+        created_at__lte=last_pulled_dt,
         deleted=True,
     ).all()
     deleted_ids = [task.id for task in deleted_tasks]
@@ -95,7 +96,9 @@ async def push_tasks(data: SyncInput, user_id: str = Depends(get_current_user_id
         task_to_create = await Task.get_or_none(id=item.id, user_id=user_id)
         if not task_to_create:
             # create task
-            task_to_create = await Task.create(**data.dict(exclude_unset=True))
+            task_to_create = await Task.create(
+                **item.dict(exclude_unset=True), user_id=user_id
+            )
             created_tasks.append(task_to_create)
 
     # Handle updated tasks
@@ -106,7 +109,7 @@ async def push_tasks(data: SyncInput, user_id: str = Depends(get_current_user_id
         if task_to_update:
             # update task
             task_to_update = task_to_update.update_from_dict(
-                data.dict(exclude_unset=True)
+                item.dict(exclude_unset=True)
             )
             await task_to_update.save()
             updated_tasks.append(task_to_update)

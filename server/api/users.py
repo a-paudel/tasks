@@ -90,10 +90,12 @@ async def login(data: OAuth2PasswordRequestForm = Depends()):
 
     # create token
     token = create_jwt_token(user)
-    refresh_token = await RefreshToken.create(user=user)
+    new_refresh_token = await RefreshToken.create(user=user)
 
     # return token
-    return TokenOutput(access_token=token, refresh_token=refresh_token.refresh_token)
+    return TokenOutput(
+        access_token=token, refresh_token=new_refresh_token.refresh_token
+    )
 
 
 # register route
