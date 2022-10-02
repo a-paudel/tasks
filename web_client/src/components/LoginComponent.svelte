@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { URLS } from "../api/api";
+    import { URLS } from "../api";
 
     let username = "";
     let password = "";
@@ -12,10 +12,6 @@
 
         let resp = await fetch(URLS.login, {
             method: "POST",
-            // headers: {
-            //     // form urlencoded
-            //     "Content-Type": "application/x-www-form-urlencoded",
-            // },
             body: body,
         });
         if (resp.ok) {

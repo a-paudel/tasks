@@ -1,7 +1,7 @@
 import { goto } from "$app/navigation";
 import * as jose from "jose"
 import { db } from "../data/database";
-import { URLS } from "./api";
+import { URLS } from ".";
 
 
 async function getAccessToken() {

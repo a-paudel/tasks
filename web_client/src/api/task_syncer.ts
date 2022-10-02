@@ -1,7 +1,7 @@
 import { browser } from "$app/environment";
 import { liveQuery } from "dexie";
 import { db, type ITask } from "../data/database";
-import { URLS } from "./api";
+import { URLS } from ".";
 import { getHeaders } from "./tokens";
 
 
