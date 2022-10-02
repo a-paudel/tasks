@@ -26,8 +26,6 @@ async function implementChanges(created: ITask[], updated: ITask[], deleted: str
 }
 
 async function pullTasks() {
-    console.log("pulling");
-
     let lastPulled = parseFloat(localStorage.getItem("lastPulled") || "0");
     let url = URLS.tasks_sync + "?last_pulled=" + lastPulled;
     let response = await fetch(url, { headers: await getHeaders() });
@@ -51,8 +49,6 @@ async function pullTasks() {
 
 
 async function pushTasks() {
-    console.log("pushing");
-
     // created tasks
     let created = await db.tasks.filter(task => {
         let isSynced = task.synced;

@@ -24,13 +24,6 @@ class TokenOutput(BaseModel):
     token_type: str = "bearer"
 
 
-class RefreshTokenOutput(BaseModel):
-    """Refresh token output schema."""
-
-    access_token: str
-    token_type: str = "bearer"
-
-
 class RefreshTokenInput(BaseModel):
     """Refresh token input schema."""
 
@@ -132,7 +125,7 @@ async def get_user(user: User = Depends(get_current_user)):
 # refresh token route
 @users_router.post(
     "/refresh",
-    response_model=RefreshTokenOutput,
+    response_model=TokenOutput,
     responses={401: {}},
 )
 async def refresh_token(data: RefreshTokenInput):
@@ -146,8 +139,13 @@ async def refresh_token(data: RefreshTokenInput):
     # get user from db
     user: User = await refresh_token_instance.user
     token = create_jwt_token(user)
+    new_refresh_token = await RefreshToken.create(user=user)
+    # delete old refresh token
+    await refresh_token_instance.delete()
     # return token
-    return RefreshTokenOutput(access_token=token)
+    return TokenOutput(
+        access_token=token, refresh_token=new_refresh_token.refresh_token
+    )
 
 
 # logout

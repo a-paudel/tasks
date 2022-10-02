@@ -33,8 +33,9 @@ async function getAccessToken() {
             }),
         });
         if (response.ok) {
-            let data: { access_token: string } = await response.json();
+            let data: { access_token: string, refresh_token: string } = await response.json();
             localStorage.setItem("accessToken", data.access_token);
+            localStorage.setItem("refreshToken", data.refresh_token);
             return data.access_token;
         }
     }
