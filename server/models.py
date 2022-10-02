@@ -1,3 +1,4 @@
+import secrets
 from datetime import timezone
 
 import arrow
@@ -18,6 +19,32 @@ class User(models.Model):
     username = fields.CharField(max_length=255, unique=True)
     password = fields.CharField(max_length=255)
     tasks: QuerySet["Task"]
+    refresh_tokens: QuerySet["RefreshToken"]
+
+
+class RefreshToken(models.Model):
+    @staticmethod
+    def generate_token() -> str:
+        return secrets.token_urlsafe(32)
+
+    @staticmethod
+    def generate_expiry_time():
+        now = arrow.utcnow()
+        return now.shift(days=+7).datetime.replace(tzinfo=timezone.utc)
+
+    refresh_token = fields.CharField(
+        unique=True, max_length=255, default=generate_token, pk=True
+    )
+    user: ForeignKeyFieldInstance["User"] = fields.ForeignKeyField(
+        "models.User", related_name="refresh_tokens"
+    )
+    expires_at = fields.DatetimeField(default=generate_expiry_time)
+
+    @property
+    def expired(self):
+        now = arrow.utcnow()
+        expires_at = arrow.get(self.expires_at)
+        return now > expires_at
 
 
 # task model

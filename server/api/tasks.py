@@ -24,11 +24,35 @@ class TaskInput(BaseModel):
     due: datetime | None
 
 
-# ROUTES
+class SyncOutput(BaseModel):
+    created: list[TaskOutput]
+    updated: list[TaskOutput]
+    deleted: list[str]
 
+
+class SyncInput(BaseModel):
+    created: list[TaskInput]
+    updated: list[TaskInput]
+    deleted: list[str]
+
+
+# ROUTER
 tasks_router = APIRouter(prefix="/tasks", tags=["Task"])
 
 
+# SYNC ROUTES
+@tasks_router.get(
+    "/sync",
+    response_model=SyncOutput,
+    tags=["Sync"],
+)
+async def pull_tasks(
+    last_fetched: float = 0, user_id: str = Depends(get_current_user_id)
+):
+    pass
+
+
+# ROUTES
 # task list
 @tasks_router.get(
     "/",
