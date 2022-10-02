@@ -1,4 +1,3 @@
-import { browser } from "$app/environment";
 import { liveQuery } from "dexie";
 import { db, type ITask } from "../data/database";
 import { URLS } from ".";

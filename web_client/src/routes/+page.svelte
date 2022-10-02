@@ -12,11 +12,17 @@
         );
         taskList = tasks;
     });
+
+    async function logoutHandler() {
+        localStorage.clear();
+        // reload
+        location.reload();
+    }
 </script>
 
 <h1>
     Tasks
-    <a href="/create" class="button pull-right">Add Task</a>
+    <a href="/create" class="primary button pull-right">Add Task</a>
 </h1>
 <hr />
 
@@ -29,3 +35,12 @@
         </header>
     </div>
 {/each}
+<button class="logout-button" on:click={logoutHandler}>Logout</button>
+
+<style>
+    .logout-button {
+        position: fixed;
+        bottom: 1rem;
+        left: 1rem;
+    }
+</style>
