@@ -2,3 +2,30 @@
 tortoise_orm = "app.config.TORTOISE_ORM_CONFIG"
 location = "./migrations"
 src_folder = "./."
+
+[tool.pdm]
+[[tool.pdm.source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+[tool.pdm.dev-dependencies]
+dev = [
+    "black",
+    "pylama",
+    "aiosqlite",
+]
+
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "apaudel96", email = "apaudel96@ymail.com"},
+]
+dependencies = ["uvicorn[standard]", "passlib[argon2]", "aerich", "tortoise-orm[asyncpg]", "arrow", "fastapi", "python-multipart"]
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
