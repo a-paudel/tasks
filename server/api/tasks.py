@@ -1,4 +1,6 @@
 from datetime import datetime
+
+import arrow
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from models import Task
@@ -16,6 +18,9 @@ class TaskOutput(BaseModel):
     done: bool
     due: datetime
 
+    class Config:
+        orm_mode = True
+
 
 class TaskInput(BaseModel):
     id: str | None
@@ -28,6 +33,7 @@ class SyncOutput(BaseModel):
     created: list[TaskOutput]
     updated: list[TaskOutput]
     deleted: list[str]
+    timestamp: float
 
 
 class SyncInput(BaseModel):
@@ -41,6 +47,7 @@ tasks_router = APIRouter(prefix="/tasks", tags=["Task"])
 
 
 # SYNC ROUTES
+# pull route
 @tasks_router.get(
     "/sync",
     response_model=SyncOutput,
@@ -49,7 +56,78 @@ tasks_router = APIRouter(prefix="/tasks", tags=["Task"])
 async def pull_tasks(
     last_fetched: float = 0, user_id: str = Depends(get_current_user_id)
 ):
-    pass
+    created_tasks = await Task.filter(
+        user_id=user_id, created_at__gt=last_fetched, deleted=False
+    ).all()
+    updated_tasks = await Task.filter(
+        user_id=user_id,
+        updated_at__gt=last_fetched,
+        created_at__lte=last_fetched,
+        deleted=False,
+    ).all()
+    deleted_tasks = await Task.filter(
+        user_id=user_id,
+        updated_at__gt=last_fetched,
+        created_at__lte=last_fetched,
+        deleted=True,
+    ).all()
+    deleted_ids = [task.id for task in deleted_tasks]
+
+    timestamp = arrow.utcnow().timestamp()
+    return SyncOutput(
+        created=[TaskOutput.from_orm(task) for task in created_tasks],
+        updated=[TaskOutput.from_orm(task) for task in updated_tasks],
+        deleted=deleted_ids,
+        timestamp=timestamp,
+    )
+
+
+@tasks_router.post(
+    "/sync",
+    response_model=SyncOutput,
+    tags=["Sync"],
+)
+async def push_tasks(data: SyncInput, user_id: str = Depends(get_current_user_id)):
+    # Handle created tasks
+    created_tasks = []
+    for item in data.created:
+        # check if task exists
+        task_to_create = await Task.get_or_none(id=item.id, user_id=user_id)
+        if not task_to_create:
+            # create task
+            task_to_create = await Task.create(**data.dict(exclude_unset=True))
+            created_tasks.append(task_to_create)
+
+    # Handle updated tasks
+    updated_tasks = []
+    for item in data.updated:
+        # check if task exists
+        task_to_update = await Task.get_or_none(id=item.id, user_id=user_id)
+        if task_to_update:
+            # update task
+            task_to_update = task_to_update.update_from_dict(
+                data.dict(exclude_unset=True)
+            )
+            await task_to_update.save()
+            updated_tasks.append(task_to_update)
+
+    # Handle deleted tasks
+    deleted_tasks = []
+    for task_id in data.deleted:
+        # check if task exists
+        task_to_delete = await Task.get_or_none(id=task_id, user_id=user_id)
+        if task_to_delete:
+            # delete task
+            task_to_delete.deleted = True
+            await task_to_delete.save()
+            deleted_tasks.append(task_to_delete)
+
+    return SyncOutput(
+        created=[TaskOutput.from_orm(task) for task in created_tasks],
+        updated=[TaskOutput.from_orm(task) for task in updated_tasks],
+        deleted=[task.id for task in deleted_tasks],
+        timestamp=arrow.utcnow().timestamp(),
+    )
 
 
 # ROUTES
