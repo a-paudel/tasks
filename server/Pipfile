@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+passlib = {extras = ["argon2"], version = "*"}
+aerich = "*"
+tortoise-orm = {extras = ["asyncpg"], version = "*"}
+arrow = "*"
+fastapi = {extras = ["all"], version = "*"}
+nanoid = "*"
+python-jose = "*"
+python-dotenv = "*"
+
+[dev-packages]
+black = {extras = ["d"], version = "*"}
+mypy = "*"
+pylama = "*"
+
+[requires]
+python_version = "3.10"
