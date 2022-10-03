@@ -48,7 +48,7 @@ async function getAccessToken() {
     //     }
     // }
     // send post request to get new access token
-    let response = await fetch(URLS.refresh_token, { credentials: "include" });
+    let response = await fetch(URLS.refresh_token, { method: "POST", credentials: "include" });
     if (response.ok) {
         // got new access token successfully, save it to svelte store
         let json: { access_token: string } = await response.json();

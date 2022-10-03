@@ -1,7 +1,8 @@
 <script lang="ts">
     import { browser } from "$app/environment";
     import { liveQuery } from "dexie";
-    import { accessTokenStorage } from "../api/tokens";
+    import { URLS } from "../api";
+    import { accessTokenStorage, getHeaders } from "../api/tokens";
     import TaskCardComponent from "../components/TaskCardComponent.svelte";
     import { db, type ITask } from "../data/database";
 
@@ -15,10 +16,22 @@
     });
 
     async function logoutHandler() {
-        localStorage.clear();
+        // remove access token
         accessTokenStorage.set(null);
+        // send request to logout route
+        let resp = await fetch(URLS.logout, {
+            method: "POST",
+            credentials: "include",
+            headers: await getHeaders(),
+        });
+        if (resp.ok) {
+            // successful logout
+            location.reload();
+        } else {
+            // failed logout
+            alert("Logout failed. Please try again.");
+        }
         // reload
-        location.reload();
     }
 </script>
 

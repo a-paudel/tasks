@@ -87,11 +87,12 @@ async def login(
         "refresh_token",
         new_refresh_token.refresh_token,
         httponly=True,
-        samesite="none",
+        samesite="lax",
+        # secure=True,
         # samesite="strict",
         max_age=60 * 60 * 24 * 7,
         # domain="localhost:5173",
-        path="/api/users/refresh",
+        path="/api/users/",
     )
 
     # return token
@@ -161,11 +162,11 @@ async def refresh_token(
         "refresh_token",
         new_refresh_token.refresh_token,
         httponly=True,
-        samesite="none",
+        samesite="lax",
         # samesite="strict",
         max_age=60 * 60 * 24 * 7,
         # domain="localhost:5173",
-        path="/api/users/refresh",
+        path="/api/users/",
     )
 
     # return token
@@ -181,14 +182,19 @@ async def refresh_token(
     responses={401: {}},
     status_code=204,
 )
-async def logout(request: Request, user: User = Depends(get_current_user)):
-    refresh_token_string = request.cookies.get("refresh_token", "")
+async def logout(
+    request: Request, response: Response, user: User = Depends(get_current_user)
+):
+    refresh_token_string = request.cookies.get("refresh_token", "NO_TOKEN")
     refresh_token_instance = await RefreshToken.get_or_none(
         refresh_token=refresh_token_string, user=user
     )
     if not refresh_token_instance or refresh_token_instance.expired:
         raise HTTPException(status_code=401, detail="Invalid token")
     await refresh_token_instance.delete()
+
+    # delete refresh token cookie
+    response.delete_cookie("refresh_token", path="/api/users/")
     return
 
 
