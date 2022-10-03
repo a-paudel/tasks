@@ -27,7 +27,11 @@
             location.reload();
             return;
         }
-        console.error("Login failed", await resp.json());
+        let json = await resp.json();
+        alert(`Login failed: ${json.detail || "Try Again"}`);
+        // clear password
+        password = "";
+        // console.error("Login failed", await resp.json());
     }
 </script>
 
