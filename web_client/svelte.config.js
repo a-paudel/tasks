@@ -11,8 +11,8 @@ const config = {
 		adapter: adapter({
 			pages: "dist",
 			fallback: "index.html",
-
 		}),
+
 		trailingSlash: "always",
 	}
 };

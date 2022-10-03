@@ -6,8 +6,10 @@ RUN pip install pipenv
 COPY server/Pipfile server/Pipfile.lock /app/
 # install
 RUN pipenv install --system --deploy
-# copy the rest of the code
-COPY server .
-# WORKDIR /app/server
+# copy server code
+COPY server server
+# copy web client code
+COPY web_client/dist web_client/dist
+WORKDIR /app/server
 
 CMD exec uvicorn app:app --host "0.0.0.0" --port $PORT
