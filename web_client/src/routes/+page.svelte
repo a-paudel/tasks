@@ -26,6 +26,7 @@
         });
         if (resp.ok) {
             // successful logout
+            localStorage.removeItem("lastPulled");
             location.reload();
         } else {
             // failed logout

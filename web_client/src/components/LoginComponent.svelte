@@ -24,7 +24,7 @@
             let ref = document.referrer;
             await goto(ref.length > 0 ? ref : "/", { replaceState: true });
             // reload
-            // location.reload();
+            location.reload();
             return;
         }
         console.error("Login failed", await resp.json());
