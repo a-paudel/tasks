@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: db
+  # ==============================================================
+  api:
+    depends_on:
+      - db
+    build: .
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgres://user:password@db:5432/db
+    # ports:
+    #   - $PORT:$PORT
+    expose:
+      - $PORT
+    labels:
+      # traefik labels
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`tasks.localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=web"
+  # ==============================================================
+
+  web_client:
+    depends_on:
+      - api
+    image: halverneus/static-file-server
+    environment:
+      - FOLDER=/web
+      - PORT=80
+    expose:
+      - 80
+    volumes:
+      - ./web_client/dist:/web:ro
+    labels:
+      # proxy enable
+      - "traefik.enable=true"
+      # proxy rule
+      - "traefik.http.routers.web_client.rule=Host(`tasks.localhost`)"
+      # proxy entrypoint
+      - "traefik.http.routers.web_client.entrypoints=web"
+  # ==============================================================
+  proxy:
+    image: traefik:latest
+    command:
+      # - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      # - --entrypoints.websecure.address=:443
+    ports:
+      - "80:80"
+      # - "443:443"
+      # - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

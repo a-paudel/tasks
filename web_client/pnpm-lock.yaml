@@ -4,6 +4,7 @@ specifiers:
   '@sveltejs/adapter-auto': next
   '@sveltejs/adapter-static': 1.0.0-next.44
   '@sveltejs/kit': next
+  chota: ^0.8.0
   dexie: ^3.2.2
   jose: ^4.10.0
   nanoid: ^4.0.0
@@ -16,6 +17,7 @@ specifiers:
 
 dependencies:
   '@sveltejs/adapter-static': 1.0.0-next.44
+  chota: 0.8.0
   dexie: 3.2.2
   jose: 4.10.0
   nanoid: 4.0.0
@@ -356,6 +358,10 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
+
+  /chota/0.8.0:
+    resolution: {integrity: sha512-6Y6MrULPNVup+9i+bFF5mXvifw4/N0AqcTO6VkhRcmRqY0XD2/EKq2kD8y7dX/PJnDq9ruHl2NURlPtGkMSNsg==}
+    dev: false
 
   /chownr/2.0.0:
     resolution: {integrity: sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==}

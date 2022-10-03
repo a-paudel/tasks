@@ -22,6 +22,7 @@
 	"type": "module",
 	"dependencies": {
 		"@sveltejs/adapter-static": "1.0.0-next.44",
+		"chota": "^0.8.0",
 		"dexie": "^3.2.2",
 		"jose": "^4.10.0",
 		"nanoid": "^4.0.0"
