@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { URLS } from "../api";
+    import { accessTokenStorage } from "../api/tokens";
 
     let username = "";
     let password = "";
@@ -16,7 +17,7 @@
         });
         if (resp.ok) {
             let data = await resp.json();
-            localStorage.setItem("accessToken", data.access_token);
+            accessTokenStorage.set(data.access_token);
             localStorage.setItem("refreshToken", data.refresh_token);
             // go back
             let ref = document.referrer;

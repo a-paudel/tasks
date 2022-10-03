@@ -1,6 +1,7 @@
 <script lang="ts">
     import { browser } from "$app/environment";
     import { liveQuery } from "dexie";
+    import { accessTokenStorage } from "../api/tokens";
     import TaskCardComponent from "../components/TaskCardComponent.svelte";
     import { db, type ITask } from "../data/database";
 
@@ -15,6 +16,7 @@
 
     async function logoutHandler() {
         localStorage.clear();
+        accessTokenStorage.set(null);
         // reload
         location.reload();
     }

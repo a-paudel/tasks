@@ -2,10 +2,18 @@ import { goto } from "$app/navigation";
 import * as jose from "jose"
 import { db } from "../data/database";
 import { URLS } from ".";
+import { writable } from "svelte/store";
 
+
+export const accessTokenStorage = writable<string | null>(null);
 
 async function getAccessToken() {
-    let accessToken = localStorage.getItem("accessToken");
+    let accessToken: string | null = null;
+    let unsubscribe = accessTokenStorage.subscribe(value => {
+        accessToken = value;
+    });
+    unsubscribe()
+
     if (accessToken) {
         let payload = jose.decodeJwt(accessToken);
         let expDate = new Date(payload.exp! * 1000);
@@ -34,7 +42,7 @@ async function getAccessToken() {
         });
         if (response.ok) {
             let data: { access_token: string, refresh_token: string } = await response.json();
-            localStorage.setItem("accessToken", data.access_token);
+            accessTokenStorage.set(data.access_token);
             localStorage.setItem("refreshToken", data.refresh_token);
             return data.access_token;
         }
