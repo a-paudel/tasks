@@ -28,27 +28,35 @@ async function getAccessToken() {
 
     // no access token so try to use refresh token
     // refresh token
-    let refreshToken = localStorage.getItem("refreshToken");
-    if (refreshToken) {
-        // use refresh token to get new access token
-        let response = await fetch(URLS.refresh_token, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                refresh_token: refreshToken,
-            }),
-        });
-        if (response.ok) {
-            let data: { access_token: string, refresh_token: string } = await response.json();
-            accessTokenStorage.set(data.access_token);
-            localStorage.setItem("refreshToken", data.refresh_token);
-            return data.access_token;
-        }
+    // let refreshToken = localStorage.getItem("refreshToken");
+    // if (refreshToken) {
+    //     // use refresh token to get new access token
+    //     let response = await fetch(URLS.refresh_token, {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({
+    //             refresh_token: refreshToken,
+    //         }),
+    //     });
+    //     if (response.ok) {
+    //         let data: { access_token: string, refresh_token: string } = await response.json();
+    //         accessTokenStorage.set(data.access_token);
+    //         localStorage.setItem("refreshToken", data.refresh_token);
+    //         return data.access_token;
+    //     }
+    // }
+    // send post request to get new access token
+    let response = await fetch(URLS.refresh_token, { credentials: "include" });
+    if (response.ok) {
+        // got new access token successfully, save it to svelte store
+        let json: { access_token: string } = await response.json();
+        accessTokenStorage.set(json.access_token)
+        return json.access_token;
     }
-    // refresh token not found, so delete all tokens and go to login page
-    localStorage.removeItem("refreshToken");
+    // no access token and no refresh token
+    // send user to login page
     // also delete database
     await db.delete();
     await db.open();
@@ -56,7 +64,6 @@ async function getAccessToken() {
     if (window.location.pathname !== "/login") {
         await goto("/login");
     }
-    // throw new Error("Not logged in");
     // done
 }
 

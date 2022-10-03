@@ -18,7 +18,7 @@
         if (resp.ok) {
             let data = await resp.json();
             accessTokenStorage.set(data.access_token);
-            localStorage.setItem("refreshToken", data.refresh_token);
+            // localStorage.setItem("refreshToken", data.refresh_token);
             // go back
             let ref = document.referrer;
             await goto(ref.length > 0 ? ref : "/", { replaceState: true });

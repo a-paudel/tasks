@@ -1,5 +1,5 @@
 import arrow
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Response, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt  # type: ignore
 from models import User, RefreshToken
@@ -20,14 +20,8 @@ class TokenOutput(BaseModel):
     """Token output schema."""
 
     access_token: str
-    refresh_token: str
+    # refresh_token: str
     token_type: str = "bearer"
-
-
-class RefreshTokenInput(BaseModel):
-    """Refresh token input schema."""
-
-    refresh_token: str
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
@@ -73,7 +67,10 @@ users_router = APIRouter(prefix="/users", tags=["User"])
     response_model=TokenOutput,
     responses={401: {}},
 )
-async def login(data: OAuth2PasswordRequestForm = Depends()):
+async def login(
+    response: Response,
+    data: OAuth2PasswordRequestForm = Depends(),
+):
     """Login route."""
     # get user from db
     user = await User.get_or_none(username=data.username)
@@ -85,9 +82,22 @@ async def login(data: OAuth2PasswordRequestForm = Depends()):
     token = create_jwt_token(user)
     new_refresh_token = await RefreshToken.create(user=user)
 
+    # set refresh token in cookie
+    response.set_cookie(
+        "refresh_token",
+        new_refresh_token.refresh_token,
+        httponly=True,
+        samesite="none",
+        # samesite="strict",
+        max_age=60 * 60 * 24 * 7,
+        # domain="localhost:5173",
+        path="/api/users/refresh",
+    )
+
     # return token
     return TokenOutput(
-        access_token=token, refresh_token=new_refresh_token.refresh_token
+        access_token=token,
+        # refresh_token=new_refresh_token.refresh_token,
     )
 
 
@@ -128,8 +138,12 @@ async def get_user(user: User = Depends(get_current_user)):
     response_model=TokenOutput,
     responses={401: {}},
 )
-async def refresh_token(data: RefreshTokenInput):
-    refresh_token_string = data.refresh_token
+async def refresh_token(
+    request: Request,
+    response: Response,
+):
+    refresh_token_string = request.cookies.get("refresh_token", "")
+    # refresh_token_string = data.refresh_token
     refresh_token_instance = await RefreshToken.get_or_none(
         refresh_token=refresh_token_string
     )
@@ -142,9 +156,22 @@ async def refresh_token(data: RefreshTokenInput):
     new_refresh_token = await RefreshToken.create(user=user)
     # delete old refresh token
     await refresh_token_instance.delete()
+    # set refresh token in cookie
+    response.set_cookie(
+        "refresh_token",
+        new_refresh_token.refresh_token,
+        httponly=True,
+        samesite="none",
+        # samesite="strict",
+        max_age=60 * 60 * 24 * 7,
+        # domain="localhost:5173",
+        path="/api/users/refresh",
+    )
+
     # return token
     return TokenOutput(
-        access_token=token, refresh_token=new_refresh_token.refresh_token
+        access_token=token,
+        # refresh_token=new_refresh_token.refresh_token,
     )
 
 
@@ -154,14 +181,14 @@ async def refresh_token(data: RefreshTokenInput):
     responses={401: {}},
     status_code=204,
 )
-async def logout(data: RefreshTokenInput, user: User = Depends(get_current_user)):
-    token_string = data.refresh_token
-    token_instance = await RefreshToken.get_or_none(
-        refresh_token=token_string, user=user
+async def logout(request: Request, user: User = Depends(get_current_user)):
+    refresh_token_string = request.cookies.get("refresh_token", "")
+    refresh_token_instance = await RefreshToken.get_or_none(
+        refresh_token=refresh_token_string, user=user
     )
-    if not token_instance or token_instance.expired:
+    if not refresh_token_instance or refresh_token_instance.expired:
         raise HTTPException(status_code=401, detail="Invalid token")
-    await token_instance.delete()
+    await refresh_token_instance.delete()
     return
 
 
