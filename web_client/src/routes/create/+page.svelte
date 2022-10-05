@@ -40,6 +40,12 @@
         await db.tasks.add(task);
         history.back();
     }
+
+    function autofocus(node: HTMLInputElement) {
+        setTimeout(() => {
+            node.focus();
+        }, 50);
+    }
 </script>
 
 <div class="background" transition:fade>
@@ -54,7 +60,12 @@
         <label>
             <strong>Task</strong>
             <!-- svelte-ignore a11y-autofocus -->
-            <input type="text" autofocus bind:value={taskContent} />
+            <input
+                type="text"
+                use:autofocus
+                bind:value={taskContent}
+                enterkeyhint="next"
+            />
         </label>
         <label>
             <strong>Due</strong>

@@ -43,7 +43,12 @@
     <form on:submit|preventDefault={loginHandler}>
         <label>
             <strong>Username</strong>
-            <input type="text" bind:value={username} />
+            <input
+                type="text"
+                bind:value={username}
+                autocapitalize="none"
+                autocorrect="off"
+            />
         </label>
         <label>
             <strong>Password</strong>

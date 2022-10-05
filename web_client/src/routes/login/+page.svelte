@@ -5,8 +5,10 @@
 </script>
 
 <div class="background" transition:fade>
-    <LoginComponent />
-    <RegisterComponent />
+    <div class="grid">
+        <LoginComponent />
+        <RegisterComponent />
+    </div>
 </div>
 
 <style>
@@ -14,15 +16,30 @@
         background-color: #3f3f3f;
         width: 100vw;
         height: 100vh;
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         display: flex;
-        flex-direction: row;
-        justify-content: center;
         align-items: center;
-        padding: 5rem;
+        justify-content: center;
+        overflow: auto;
         z-index: 100;
-        gap: 5rem;
+    }
+
+    .grid {
+        display: grid;
+        align-items: center;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding-block: 2rem;
+        overflow: auto;
+        height: 100vh;
+    }
+
+    @media (min-width: 768px) {
+        .grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 10rem;
+        }
     }
 </style>
